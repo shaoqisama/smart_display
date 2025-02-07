@@ -1,39 +1,25 @@
 "use client"
 
 import { useState, useEffect, useRef } from "react"
+import axios from "axios"
 import { ImageIcon } from "lucide-react"
 import { performanceConfig } from "@/config/performance-config"
 
-interface MediaFile {
-  type: 'image' | 'video'
-  src: string
-  alt: string
-}
-
 export function MediaGallery() {
-  const [currentMedia, setCurrentMedia] = useState<MediaFile | null>(null)
+  const [currentMedia, setCurrentMedia] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [isHydrated, setIsHydrated] = useState(false)
   const videoRef = useRef<HTMLVideoElement>(null)
-  const timerRef = useRef<NodeJS.Timeout>()
 
   const fetchRandomMedia = async () => {
     try {
       setError(null)
       setIsLoading(true)
-      const response = await fetch('/api/media')
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`)
-      }
-      const data = await response.json()
-      if (data.mediaFile) {
-        console.log('Received media file:', data.mediaFile)
-        setCurrentMedia(data.mediaFile)
-      } else if (data.error) {
-        setError(data.error)
-      }
+      const response = await axios.get('http://localhost:3001/api/random-media')
+      const mediaUrl = response.data
+      setCurrentMedia(mediaUrl)
     } catch (error) {
-      console.error('Error fetching media:', error)
       setError('Failed to load media')
     } finally {
       setIsLoading(false)
@@ -41,25 +27,25 @@ export function MediaGallery() {
   }
 
   useEffect(() => {
+    setIsHydrated(true)
     fetchRandomMedia()
 
     const interval = setInterval(() => {
-      if (currentMedia?.type !== 'video' || !videoRef.current?.paused) {
+      if (currentMedia && videoRef.current && !videoRef.current.paused) {
         fetchRandomMedia()
       }
     }, performanceConfig.intervals.mediaGallery)
 
     return () => {
       clearInterval(interval)
-      if (timerRef.current) {
-        clearTimeout(timerRef.current)
-      }
     }
-  }, [])
+  }, [currentMedia])
 
   const handleVideoEnded = () => {
     fetchRandomMedia()
   }
+
+  if (!isHydrated) return null
 
   if (isLoading) {
     return (
@@ -85,6 +71,8 @@ export function MediaGallery() {
     )
   }
 
+  const isVideo = currentMedia.endsWith('.mp4') || currentMedia.endsWith('.mov');
+
   return (
     <div className="flex flex-col space-y-4 h-full">
       <div className="flex items-center justify-between">
@@ -96,25 +84,26 @@ export function MediaGallery() {
       </div>
 
       <div className="relative flex-1 rounded-lg overflow-hidden bg-black/5">
-        {currentMedia.type === 'image' ? (
-          <img
-            src={currentMedia.src}
-            alt={currentMedia.alt}
-            className="w-full h-full object-contain"
-          />
-        ) : (
+        {isVideo ? (
           <video
             ref={videoRef}
-            src={currentMedia.src}
+            src={currentMedia}
             className="w-full h-full object-contain"
             playsInline
             autoPlay
             muted
             onEnded={handleVideoEnded}
+            onError={() => setError('Video failed to load')}
+          />
+        ) : (
+          <img
+            src={currentMedia}
+            alt="Media content"
+            className="w-full h-full object-contain"
+            onError={() => setError('Image failed to load')}
           />
         )}
       </div>
     </div>
   )
 }
-
