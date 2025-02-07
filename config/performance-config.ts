@@ -19,6 +19,6 @@ export const performanceConfig = {
     clock: 60000,        // Update clock every minute
     weather: 900000,     // Update weather every 15 minutes
     calendar: 300000,    // Update calendar every 5 minutes
-    mediaGallery: 30000, // Rotate media every 30 seconds
+    mediaGallery: 3000, // Rotate media every 30 seconds
   }
 } 
