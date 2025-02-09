@@ -26,48 +26,51 @@ export default async function Home() {
 
   return (
     <div className="min-h-screen w-screen p-6 bg-[#f5f5f5] dark:bg-[#1a1a1a] overflow-hidden">
-      {/* Main Grid Layout */}
-      <div className="grid grid-cols-12 grid-rows-[repeat(8,minmax(0,1fr))] gap-4 h-[calc(100vh-3rem)]">
-        {/* Top Row */}
-        <Suspense fallback={<LoadingPlaceholder />}>
-          <GridTile title="Time & Date" className="col-span-3 row-span-2">
-            <Clock />
-          </GridTile>
-        </Suspense>
+      {/* Main Flex Layout */}
+      <div className="flex h-[calc(100dvh-2rem)] gap-4 p-4 bg-gray-50">
+        {/* Left Column */}
+        <div className="flex-1 flex flex-col gap-4">
+          {/* Top Row */}
+          <Suspense fallback={<LoadingPlaceholder />}>
+            <GridTile title="Time & Date" className="mb-4">
+              <Clock />
+            </GridTile>
+          </Suspense>
 
-        <Suspense fallback={<LoadingPlaceholder />}>
-          <GridTile title="Weather" className="col-span-3 row-span-2">
-            <Weather data={weather} />
-          </GridTile>
-        </Suspense>
+          <Suspense fallback={<LoadingPlaceholder />}>
+            <GridTile title="Weather" className="mb-4">
+              <Weather data={weather} />
+            </GridTile>
+          </Suspense>
 
-        <Suspense fallback={<LoadingPlaceholder />}>
-          <GridTile title="Pregnancy Timeline" className="col-span-6 row-span-2">
-            <PregnancyStatus startDate="2023-09-01" dueDate="2024-06-07" />
-          </GridTile>
-        </Suspense>
+          <Suspense fallback={<LoadingPlaceholder />}>
+            <GridTile title="Pregnancy Timeline" className="mb-4">
+              <PregnancyStatus startDate="2023-09-01" dueDate="2024-06-07" />
+            </GridTile>
+          </Suspense>
 
-        {/* Middle Rows */}
-        <Suspense fallback={<LoadingPlaceholder />}>
-          <GridTile title="Calendar" className="col-span-4 row-span-3">
-            <Calendar events={calendarEvents} currentDate={currentDate} />
-          </GridTile>
-        </Suspense>
+          <Suspense fallback={<LoadingPlaceholder />}>
+            <GridTile title="Calendar" className="mb-4">
+              <Calendar events={calendarEvents} currentDate={currentDate} />
+            </GridTile>
+          </Suspense>
 
-        <Suspense fallback={<LoadingPlaceholder />}>
-          <GridTile title="Media Gallery" className="col-span-8 row-span-3">
-            <MediaGallery />
-          </GridTile>
-        </Suspense>
+          <Suspense fallback={<LoadingPlaceholder />}>
+            <GridTile title="News Feed" className="mb-4">
+              <RSSFeed items={rssFeed} />
+            </GridTile>
+          </Suspense>
+        </div>
 
-        {/* Bottom Row */}
-        <Suspense fallback={<LoadingPlaceholder />}>
-          <GridTile title="News Feed" className="col-span-12 row-span-3">
-            <RSSFeed items={rssFeed} />
-          </GridTile>
-        </Suspense>
+        {/* Right Column */}
+        <div className="flex-[2] bg-white rounded-lg shadow-lg p-4 overflow-hidden">
+          <Suspense fallback={<LoadingPlaceholder />}>
+            <GridTile title="Media Gallery">
+              <MediaGallery />
+            </GridTile>
+          </Suspense>
+        </div>
       </div>
     </div>
   )
 }
-

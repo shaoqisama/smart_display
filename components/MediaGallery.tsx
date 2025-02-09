@@ -6,7 +6,7 @@ import { ImageIcon } from "lucide-react"
 import { performanceConfig } from "@/config/performance-config"
 
 // Configuration constants
-const API_URL = "http://localhost:3001/api/random-media"
+const API_URL = "http://192.168.50.178:3001/api/random-media"
 const MEDIA_REFRESH_INTERVAL = performanceConfig.intervals.mediaGallery
 
 export function MediaGallery() {
